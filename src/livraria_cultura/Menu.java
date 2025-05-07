@@ -1,24 +1,36 @@
 package livraria_cultura;
 
 
+import livraria_cultura.model.Produto;
+import livraria_cultura.model.Livros;
+import livraria_cultura.model.CDs;
+import livraria_cultura.util.Cores;
 
 import java.io.IOException;
 import java.util.Scanner;
 
-import livraria_cultura.util.Cores;
 
 public class Menu {
 
 	public static void main(String[] args) {
 		
-		
+			
 		Scanner leia = new Scanner(System.in);
 
 		
 		int opcao, id, tipo;
-		String nome;
+		String nome, estilo, genero;
 		float preco;
 
+		/* Testes do modelo de dados */
+
+		Livros l1 = new Livros(1010, "Pense e Enriqueça", 1, 41f, "Desenvolvimento pessoal\n");
+		l1.visualizar();
+
+		CDs c1 = new CDs(2010, "Elis & Tom", 2, 30f, "MPB\n");
+		c1.visualizar();
+		
+				
 
 		while (true) {
 
@@ -57,7 +69,7 @@ public class Menu {
 				leia.skip("\\R");
 				nome = leia.nextLine();
 
-				System.out.println("Digite o tipo do Produto (1 - Livro | 2 - CDs:");
+				System.out.println("Digite o tipo do Produto (1 - Livro | 2 - CD:");
 				tipo = leia.nextInt();
 
 				System.out.println("Digite o preço do Produto:");
