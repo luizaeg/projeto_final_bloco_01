@@ -3,10 +3,12 @@ package livraria_cultura;
 
 import livraria_cultura.model.Produto;
 import livraria_cultura.model.Livros;
+import livraria_cultura.controller.ProdutoController;
 import livraria_cultura.model.CDs;
 import livraria_cultura.util.Cores;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Scanner;
 
 
@@ -17,6 +19,7 @@ public class Menu {
 			
 		Scanner leia = new Scanner(System.in);
 
+		ProdutoController produtos = new ProdutoController();
 		
 		int opcao, id, tipo;
 		String nome, estilo, genero;
@@ -24,11 +27,11 @@ public class Menu {
 
 		/* Testes do modelo de dados */
 
-		Livros l1 = new Livros(1010, "Pense e Enriqueça", 1, 41f, "Desenvolvimento pessoal\n");
-		l1.visualizar();
+		Livros l1 = new Livros(produtos.gerarId(), "Pense e Enriqueça", 1, 41f, "Desenvolvimento pessoal\n");
+		produtos.cadastrar(l1);
 
-		CDs c1 = new CDs(2010, "Elis & Tom", 2, 30f, "MPB\n");
-		c1.visualizar();
+		CDs c1 = new CDs(produtos.gerarId(), "Elis & Tom", 2, 30f, "MPB\n");
+		produtos.cadastrar(c1);
 		
 				
 
@@ -74,11 +77,28 @@ public class Menu {
 
 				System.out.println("Digite o preço do Produto:");
 				preco = leia.nextFloat();
+				
+				switch (tipo) {
+				case 1 -> {
+					System.out.println("Digite o Gênero desejado:");
+					leia.skip("\\R");
+					genero = leia.nextLine();
+					produtos.cadastrar(new Livros(produtos.gerarId(), nome, tipo, preco, genero));
+				}
+				case 2 -> {
+					System.out.println("Digite o Estilo Musical desejado:");
+					leia.skip("\\R");
+					estilo = leia.nextLine();
+					produtos.cadastrar(new CDs(produtos.gerarId(), nome, tipo, preco, estilo));
+				}
+				}
 
 				keyPress();
 				break;
 			case 2:
 				System.out.println(Cores.TEXT_WHITE + "Listar todos as Produtos\n\n");
+				
+				produtos.listarTodos();
 				
 				keyPress();
 				break;
@@ -87,6 +107,8 @@ public class Menu {
 
 				System.out.println("Digite o ID do Produto: ");
 				id = leia.nextInt();
+				
+				produtos.procurarPorId(id);
 
 				keyPress();
 				break;
@@ -94,15 +116,49 @@ public class Menu {
 				System.out.println(Cores.TEXT_WHITE + "Atualizar dados do Produto\n\n");
 
 				System.out.println("Digite o id do produto: ");
-				id = leia.nextInt();		
+				id = leia.nextInt();
+				
+				Optional<Produto> produto = produtos.buscarNaCollection(id);
+				
+				
+				if(produto.isPresent()) {
+					
+					System.out.println("Digite o nome do Produto:");
+					leia.skip("\\R");
+					nome = leia.nextLine();
+	
+					tipo = produto.get().getTipo();
+	
+					System.out.println("Digite o preço do Produto:");
+					preco = leia.nextFloat();
+	
+					switch (tipo) {
+						case 1 -> {
+							System.out.println("Digite o Gênero:");
+							leia.skip("\\R");
+							genero = leia.nextLine();
+							produtos.atualizar(new Livros(id, nome, tipo, preco, genero));
+						}
+						case 2 -> {
+							System.out.println("Digite o Estilo:");
+							leia.skip("\\R");
+							estilo = leia.nextLine();
+							produtos.atualizar(new CDs(id, nome, tipo, preco, estilo));
+						}
+					}
+				} else // Caso não exista a conta
+					System.out.printf("\n O Produto ID %d não existe!", id);
+			
 
 				keyPress();
 				break;
 			case 5:
-				System.out.println(Cores.TEXT_WHITE + "Apagar a Produto\n\n");
+				System.out.println(Cores.TEXT_WHITE + "Apagar o Produto\n\n");
 
 				System.out.println("Digite o ID do Produto: ");
 				id = leia.nextInt();
+				
+				produtos.deletar(id);
 
 				keyPress();
 				break;
